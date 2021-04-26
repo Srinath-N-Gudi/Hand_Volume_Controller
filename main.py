@@ -10,6 +10,7 @@ from pyautogui import press
 import time
 paused = False
 one = False
+
 mp_drawing = mp.solutions.drawing_utils
 mp_hands = mp.solutions.hands
 devices = AudioUtilities.GetSpeakers()
@@ -55,27 +56,22 @@ with mp_hands.Hands(
             cv2.circle(image, ((x1+x2)//2, (y1+y2)//2), 15, (255, 0, 0), cv2.FILLED)
             if time.time() - time_normal > 5:
               press("space")
-              print("I pause")
               paused = True
               
         elif paused and length > 50:
-          print("I resume")
           press("space")
           time_normal = time.time()
           paused = False
 
-
-        #volume.GetMute()
-        #volume.GetMasterVolumeLevel()
         volRange = volume.GetVolumeRange()
         minVol = volRange[0]
         maxVol = volRange[1]
 
         vol = np.interp(length, [50, 200], [minVol, maxVol])
-        if -65<vol<0:
+        if minVol<vol<maxVol:
           volume.SetMasterVolumeLevel(vol, None)
 
-    cv2.imshow('MediaPipe Hands', image)
+    cv2.imshow('Hand Volume Controller', image)
     if cv2.waitKey(5) & 0xFF == 27:
       break
 cap.release()
